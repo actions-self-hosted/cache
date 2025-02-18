@@ -67718,6 +67718,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.saveCache = exports.restoreCache = void 0;
+const os = __importStar(__nccwpck_require__(857));
 const utils = __importStar(__nccwpck_require__(8270));
 const cacheUtils = __importStar(__nccwpck_require__(8299));
 const tar = __importStar(__nccwpck_require__(5321));
@@ -67725,6 +67726,7 @@ const core = __importStar(__nccwpck_require__(7484));
 const fs_1 = __importDefault(__nccwpck_require__(9896));
 const fs = __importStar(__nccwpck_require__(1943));
 const path = __importStar(__nccwpck_require__(6928));
+const exec = __importStar(__nccwpck_require__(5236));
 const cache = __importStar(__nccwpck_require__(5116));
 const cache_1 = __nccwpck_require__(5116);
 const constants_1 = __nccwpck_require__(7242);
@@ -67760,6 +67762,22 @@ function checkKey(key) {
     }
 }
 /**
+ * 지정된 디렉토리(cacheDir)의 소유권을 현재 사용자로 변경하는 메서드.
+ * exec 결과를 기반으로 warning 로그를 출력합니다.
+ *
+ * @param directory 소유권을 변경할 대상 디렉토리 경로
+ */
+function grantPermission(directory) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const currentUser = os.userInfo().username;
+        core.debug(`Changing ownership of ${directory} to ${currentUser}`);
+        const exitCode = yield exec.exec("sudo", ["chown", "-R", `${currentUser}:${currentUser}`, directory], { ignoreReturnCode: true });
+        if (exitCode !== 0) {
+            throw new Error(`Changing ownership of ${directory} exited with code ${exitCode}`);
+        }
+    });
+}
+/**
  * restoreCache
  *
  * 로컬 캐시에서 저장된 tar 아카이브를 복원합니다.
@@ -67781,6 +67799,7 @@ function restoreCache(paths, primaryKey, restoreKeys = [], options, enableCrossO
         }
         core.info("Cache with local");
         try {
+            yield grantPermission(cacheDir);
             checkPaths(paths);
             // 전체 후보 키: primaryKey + restoreKeys
             const candidateKeys = [primaryKey, ...restoreKeys];
@@ -67841,6 +67860,7 @@ function saveCache(paths, key, options, enableCrossOsArchive, cacheDir) {
         core.info("Cache with local");
         let tempArchivePath = "";
         try {
+            yield grantPermission(cacheDir);
             checkPaths(paths);
             checkKey(key);
             const compressionMethod = yield cacheUtils.getCompressionMethod();

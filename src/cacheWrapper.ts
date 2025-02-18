@@ -1,3 +1,4 @@
+import * as os from "os";
 import * as utils from "./utils/actionUtils";
 import * as cacheUtils from "@actions/cache/lib/internal/cacheUtils";
 import * as tar from "@actions/cache/lib/internal/tar";
@@ -5,6 +6,7 @@ import * as core from "@actions/core";
 import fsSync from "fs";
 import * as fs from "fs/promises";
 import * as path from "path";
+import * as exec from "@actions/exec";
 import * as cache from "@actions/cache";
 import { ValidationError } from "@actions/cache";
 import { DownloadOptions, UploadOptions } from "@actions/cache/lib/options";
@@ -53,6 +55,29 @@ function checkKey(key: string): void {
 }
 
 /**
+ * 지정된 디렉토리(cacheDir)의 소유권을 현재 사용자로 변경하는 메서드.
+ * exec 결과를 기반으로 warning 로그를 출력합니다.
+ *
+ * @param directory 소유권을 변경할 대상 디렉토리 경로
+ */
+async function grantPermission(directory: string): Promise<void> {
+    const currentUser = os.userInfo().username;
+    core.debug(`Changing ownership of ${directory} to ${currentUser}`);
+
+    const exitCode: number = await exec.exec(
+        "sudo",
+        ["chown", "-R", `${currentUser}:${currentUser}`, directory],
+        { ignoreReturnCode: true }
+    );
+
+    if (exitCode !== 0) {
+        throw new Error(
+            `Changing ownership of ${directory} exited with code ${exitCode}`
+        );
+    }
+}
+
+/**
  * restoreCache
  *
  * 로컬 캐시에서 저장된 tar 아카이브를 복원합니다.
@@ -87,6 +112,7 @@ export async function restoreCache(
 
     core.info("Cache with local");
     try {
+        await grantPermission(cacheDir);
         checkPaths(paths);
 
         // 전체 후보 키: primaryKey + restoreKeys
@@ -170,6 +196,7 @@ export async function saveCache(
     core.info("Cache with local");
     let tempArchivePath = "";
     try {
+        await grantPermission(cacheDir);
         checkPaths(paths);
         checkKey(key);
 
