@@ -74,10 +74,6 @@ export async function restoreCache(
     enableCrossOsArchive?: boolean,
     cacheDir?: string | undefined
 ): Promise<string | undefined> {
-    if (cacheDir != null) {
-        core.info(cacheDir);
-    }
-
     if (!cacheDir) {
         core.info("Cache with github cache");
         return await cache.restoreCache(
@@ -164,6 +160,7 @@ export async function saveCache(
     cacheDir?: string
 ): Promise<number> {
     if (!cacheDir) {
+        core.info("Cache with github cache");
         return await cache.saveCache(
             paths,
             key,
@@ -172,6 +169,7 @@ export async function saveCache(
         );
     }
 
+    core.info("Cache with local");
     let tempArchivePath = "";
     try {
         checkPaths(paths);

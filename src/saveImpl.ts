@@ -8,7 +8,6 @@ import {
     StateProvider
 } from "./stateProvider";
 import * as utils from "./utils/actionUtils";
-import { getInputAsString } from "./utils/actionUtils";
 
 // Catch and log any unhandled exceptions.  These exceptions can leak out of the uploadChunk method in
 // @actions/toolkit when a failed upload closes the file descriptor causing any in-process reads to
@@ -18,8 +17,6 @@ process.on("uncaughtException", e => utils.logWarning(e.message));
 export async function saveImpl(
     stateProvider: IStateProvider
 ): Promise<number | void> {
-    core.info("test");
-
     let cacheId = -1;
     try {
         if (!utils.isCacheFeatureAvailable()) {
