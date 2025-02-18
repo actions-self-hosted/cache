@@ -67811,7 +67811,6 @@ function restoreCache(paths, primaryKey, restoreKeys = [], options, enableCrossO
                     return key;
                 }
             }
-            core.info(`Cache not found for keys: ${candidateKeys.join(", ")}`);
         }
         catch (error) {
             core.warning(`Failed to restore cache: ${error.message}`);

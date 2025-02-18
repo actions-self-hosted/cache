@@ -131,8 +131,6 @@ export async function restoreCache(
                 return key;
             }
         }
-
-        core.info(`Cache not found for keys: ${candidateKeys.join(", ")}`);
     } catch (error: any) {
         core.warning(`Failed to restore cache: ${error.message}`);
     }
