@@ -113,7 +113,7 @@ jobs:
 
     - name: Cache Primes
       id: cache-primes
-      uses: actions/cache@v4
+      uses: actions-self-hosted/cache@v4
       with:
         path: prime-numbers
         key: ${{ runner.os }}-primes
@@ -210,7 +210,7 @@ A cache key can include any of the contexts, functions, literals, and operators 
 For example, using the [`hashFiles`](https://docs.github.com/en/actions/learn-github-actions/expressions#hashfiles) function allows you to create a new cache when dependencies change.
 
 ```yaml
-  - uses: actions/cache@v4
+  - uses: actions-self-hosted/cache@v4
     with:
       path: |
         path/to/dependencies
@@ -228,7 +228,7 @@ Additionally, you can use arbitrary command output in a cache key, such as a dat
       echo "date=$(/bin/date -u "+%Y%m%d")" >> $GITHUB_OUTPUT
     shell: bash
 
-  - uses: actions/cache@v4
+  - uses: actions-self-hosted/cache@v4
     with:
       path: path/to/dependencies
       key: ${{ runner.os }}-${{ steps.get-date.outputs.date }}-${{ hashFiles('**/lockfiles') }}
@@ -250,7 +250,7 @@ Example:
 steps:
   - uses: actions/checkout@v4
 
-  - uses: actions/cache@v4
+  - uses: actions-self-hosted/cache@v4
     id: cache
     with:
       path: path/to/dependencies
@@ -262,6 +262,22 @@ steps:
 ```
 
 > **Note** The `id` defined in `actions/cache` must match the `id` in the `if` statement (i.e. `steps.[ID].outputs.cache-hit`)
+
+## Cache Local
+
+The `cache-dir` input allows you to specify a local directory for storing cache files. This can be useful when you want to maintain caches in a specific location, similar to how the default cache is stored but in a location of your choice.
+
+```yaml
+steps:
+  - uses: actions/checkout@v4
+
+  - uses: actions-self-hosted/cache@v4
+    id: cache
+    with:
+      path: path/to/dependencies
+      key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
+      cache-dir: path/to/cache-dir
+```
 
 ## Cache Version
 
@@ -282,7 +298,7 @@ jobs:
 
       - name: Cache Primes
         id: cache-primes
-        uses: actions/cache@v4
+        uses: actions-self-hosted/cache@v4
         with:
           path: prime-numbers
           key: primes
@@ -293,7 +309,7 @@ jobs:
 
       - name: Cache Numbers
         id: cache-numbers
-        uses: actions/cache@v4
+        uses: actions-self-hosted/cache@v4
         with:
           path: numbers
           key: primes
@@ -309,7 +325,7 @@ jobs:
 
       - name: Cache Primes
         id: cache-primes
-        uses: actions/cache@v4
+        uses: actions-self-hosted/cache@v4
         with:
           path: prime-numbers
           key: primes
