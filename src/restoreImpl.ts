@@ -1,6 +1,6 @@
-import * as cache from "@actions/cache";
 import * as core from "@actions/core";
 
+import * as cache from "./cacheWrapper";
 import { Events, Inputs, Outputs, State } from "./constants";
 import {
     IStateProvider,
@@ -47,7 +47,8 @@ export async function restoreImpl(
             primaryKey,
             restoreKeys,
             { lookupOnly: lookupOnly },
-            enableCrossOsArchive
+            enableCrossOsArchive,
+            utils.getInputAsString(Inputs.CacheDir)
         );
 
         if (!cacheKey) {

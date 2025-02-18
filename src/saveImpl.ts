@@ -1,6 +1,6 @@
-import * as cache from "@actions/cache";
 import * as core from "@actions/core";
 
+import * as cache from "./cacheWrapper";
 import { Events, Inputs, State } from "./constants";
 import {
     IStateProvider,
@@ -8,6 +8,7 @@ import {
     StateProvider
 } from "./stateProvider";
 import * as utils from "./utils/actionUtils";
+import { getInputAsString } from "./utils/actionUtils";
 
 // Catch and log any unhandled exceptions.  These exceptions can leak out of the uploadChunk method in
 // @actions/toolkit when a failed upload closes the file descriptor causing any in-process reads to
@@ -66,7 +67,8 @@ export async function saveImpl(
             cachePaths,
             primaryKey,
             { uploadChunkSize: utils.getInputAsInt(Inputs.UploadChunkSize) },
-            enableCrossOsArchive
+            enableCrossOsArchive,
+            utils.getInputAsString(Inputs.CacheDir)
         );
 
         if (cacheId != -1) {

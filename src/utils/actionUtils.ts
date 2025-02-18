@@ -66,6 +66,14 @@ export function getInputAsBool(
     return result.toLowerCase() === "true";
 }
 
+export function getInputAsString(
+    name: string,
+    options?: core.InputOptions
+): string | undefined {
+    const input = core.getInput(name, options).trim();
+    return input === "" ? undefined : input;
+}
+
 export function isCacheFeatureAvailable(): boolean {
     if (cache.isFeatureAvailable()) {
         return true;

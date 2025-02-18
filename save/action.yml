@@ -15,6 +15,9 @@ inputs:
     description: 'An optional boolean when enabled, allows windows runners to save caches that can be restored on other platforms'
     default: 'false'
     required: false
+  cache-dir:
+    description: 'The directory path where cache files will be stored locally'
+    required: false
 runs:
   using: 'node20'
   main: '../dist/save-only/index.js'
