@@ -72,9 +72,14 @@ export async function restoreCache(
     restoreKeys: string[] = [],
     options?: DownloadOptions,
     enableCrossOsArchive?: boolean,
-    cacheDir?: string
+    cacheDir?: string | undefined
 ): Promise<string | undefined> {
+    if (cacheDir != null) {
+        core.info(cacheDir);
+    }
+
     if (!cacheDir) {
+        core.info("Cache with github cache");
         return await cache.restoreCache(
             paths,
             primaryKey,
@@ -84,6 +89,7 @@ export async function restoreCache(
         );
     }
 
+    core.info("Cache with local");
     try {
         checkPaths(paths);
 
